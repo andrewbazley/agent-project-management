@@ -12,16 +12,19 @@ Change nothing until step 2 is committed. Do not delete anything at any step.
 2. **Commit the starting state.** `git init` if needed, with a `.gitignore` that leaves out large
    regenerable data (each rule with its reason), and commit everything else as found: "Record the
    project as found, before reorganization".
-3. **Inventory the data** in `DATA_INVENTORY.md`: what must never be deleted (the only copies,
-   irreplaceable inputs), what can be rebuilt and at what cost, and what can go. Ask the user about
-   anything you cannot classify.
+3. **Inventory the data** in `DATA_INVENTORY.md`, from the template: what must never be deleted
+   (the only copies, irreplaceable inputs), what can be rebuilt and at what cost, and what can go.
+   Ask the user about anything you cannot classify, and where the lab storage for offloaded data
+   is.
 4. **Add the record files** from the template (`DECISIONS.md`, `OPEN_ITEMS.md`, `FOLDER_LAYOUT.md`,
    `README.md`, `tools/`). `DECISIONS.md` opens at decision 1 with a preamble saying the record
    starts now and where earlier decisions live. Do not back-date reconstructed decisions. Any
    reconstructed document says so at its top.
 5. **Propose the reorganization** to the user before moving anything: which files become which
-   streams, what goes to `archive/`, and which old paths need a stub because a document cites them.
-   Use `git mv` so history follows each file.
+   streams, which lines of work are finished and should be closed with a summary, what goes to
+   `archive/`, what is offloaded, and which old paths need a stub because a document cites them.
+   The `tidy-project` skill has the procedure for each. Use `git mv` so history follows each
+   file.
 6. **Index the outputs** that documents rely on (`tools/make_index.py --draft`), and freeze those a
    document or verifier reads.
 7. **Run `tools/verify_all.sh`.** Expect citation failures at first. Fix them by moving, stubbing or

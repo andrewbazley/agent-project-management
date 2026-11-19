@@ -3,6 +3,18 @@
 Decisions about how projects are run, in the format the template uses. Numbered in sequence, each
 written before the change it governs; a wrong entry gets a dated sub-entry and stays as written.
 
+## Index
+
+| # | decision | status |
+|---|---|---|
+| 1 | what this repository holds | in force |
+| 2 | three parts, one home for each idea | in force |
+| 3 | which patterns from the earlier projects were kept | in force |
+| 4 | the template does not include `CLAUDE.md` | amended by 4a |
+| 5 | skills ship as a plugin | in force |
+| 6 | the check tools use only the standard library | in force |
+| 7 | projects are kept small by survey, summary and offload | in force |
+
 ---
 
 ## 1. What this repository holds
@@ -105,3 +117,30 @@ finds the project root by walking up to `CLAUDE.md` or `.git`.
 
 **Reason** The checks must run on a fresh clone, on a laptop and on a cluster login node, before any
 project environment exists.
+
+---
+
+## 7. Projects are kept small by survey, summary and offload
+
+**Date** 2026-11-19
+**Question** How does a project shed material it has moved past without losing it, and without
+sessions spending their reading on it?
+
+**Decision** Archived, closed and offloaded material leaves the reading path but stays reachable
+through a summary, a recorded location and a way back (`02_template/CLAUDE.md` §13). Added to the
+template: `DATA_INVENTORY.md`, which replaces the earlier projects' archive manifests and data
+inventories; a closing summary in the stream README; an index at the top of `DECISIONS.md`; an
+ignored `work/` in each stream; and three tools, `survey.py` (live, history and unreferenced files,
+and budget warnings that never fail), `offload.py` (verified copies to lab storage, recorded in the
+inventory, with prune and restore) and `records.py` (the inventory reader the checks share). The
+procedure is a seventh skill, `tidy-project`. Nothing costly to regenerate is deleted, and nothing
+moves without the person's approval.
+
+**Reason** The earlier projects grew by reruns and side analyses until their roots held dozens of
+reports and results folders, and their large data outgrew both git and the laptops it sat on. One
+moved its cluster tree into the repository and needed a separate manifest to say what was left
+behind. Sessions spent reading on documents a person then had to call outdated.
+
+**Falsifier** A project tidied this way loses something a later session needs, or its sessions
+still open archived or closed material to find out whether it is current.
+

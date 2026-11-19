@@ -14,7 +14,9 @@ description: Start a new research project as a git-tracked record (README, DECIS
 3. **Keep the working rules general.** The template's `CLAUDE.md` comes with the copy. Put rules
    specific to this project in `README.md` §6, not in `CLAUDE.md`.
 4. **Fill in, from the user's answers only:** the title and goal in `README.md`, §1 and §2, the
-   stream row in `FOLDER_LAYOUT.md`, and the stream `README.md`. Leave the HTML comments that guide
+   stream row in `FOLDER_LAYOUT.md`, and the stream `README.md`. Ask where costly outputs will be
+   offloaded (backed-up lab storage, not this computer) and how many hours of compute make an
+   output costly, and put both in `README.md` §6. Leave the HTML comments that guide
    later sessions until the section is filled.
 5. **Write decision 1** in `DECISIONS.md`: what the first session is licensed to do and what it is
    not. Write the first brief, `PROMPT_01_<topic>.md`, from the template's sections.

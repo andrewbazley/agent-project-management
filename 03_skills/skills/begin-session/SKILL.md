@@ -8,11 +8,15 @@ description: Start a working session on a project kept as a git-tracked record, 
 1. **Find the current brief:** the highest-numbered `PROMPT_NN_*.md` in the active stream named in
    `README.md` "Where the work stands". If a later block quote headed "Amended" exists, it overrides
    the sections below it.
-2. **Read in the brief's order.** `CLAUDE.md` in full, `README.md` §6, then only the `DECISIONS.md`
-   entries and `OPEN_ITEMS.md` items the brief names. Do not read whole long record files.
+2. **Read in the brief's order.** `CLAUDE.md` in full, `README.md` §6, the `DECISIONS.md` index,
+   then only the decision entries and `OPEN_ITEMS.md` items the brief names. Do not read whole long
+   record files, and do not open archived material, closed streams or superseded briefs unless the
+   brief or the user asks; read their summaries instead (`CLAUDE.md` 13.2).
 3. **Check the state.** `git status` and `git log --oneline -15` (uncommitted changes or a commit
    newer than the brief mean someone worked since it was written). Run `tools/verify_all.sh` and
-   note failures and skips before changing anything; they are not this session's to hide.
+   note failures, skips and budget warnings before changing anything; they are not this
+   session's to hide. A budget warning goes into the plan as a suggested tidy (`tidy-project`),
+   not into this session's work unless the user agrees.
 4. **Check anything still running** that the brief lists (cluster jobs, background runs) and record
    its state.
 5. **State the plan back to the user in a few lines:** the work the brief names, what is out of

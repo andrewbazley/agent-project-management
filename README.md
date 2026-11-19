@@ -23,8 +23,8 @@ not. This enables simultaneous benchmarking and learning for coding and developm
 | `01_guide/supervision.md` | mechanical checks, independent reviewers, unattended runs, and several agents sharing one record |
 | `01_guide/shared_compute.md` | rules for an agent using a shared cluster on your account, with a block for `~/.claude/CLAUDE.md` |
 | `01_guide/writing_style.md` | how documents, briefs and commit messages are written |
-| `02_template/` | the folder you copy to start a project: the working rules (`CLAUDE.md`), record files, a first stream, review templates and the check tools |
-| `03_skills/` | Claude Code skills that carry out the routines: start, adopt, begin a session, end a session, record a decision, review |
+| `02_template/` | the folder you copy to start a project: the working rules (`CLAUDE.md`), record files, a first stream, review templates, the check tools, and the tools that survey the tree and offload data to lab storage |
+| `03_skills/` | Claude Code skills that carry out the routines: start, adopt, begin a session, end a session, record a decision, review, tidy |
 | `DECISIONS.md`, `OPEN_ITEMS.md` | this repository's own record |
 
 ## Start a project
@@ -76,6 +76,7 @@ in `03_skills/skills/` to `~/.claude/skills/`; the skills are then invoked witho
 | `end-session` | verify, index, propagate, follow up on jobs, write the next brief, commit |
 | `record-decision` | write a decision, prediction block or correction before the work it governs |
 | `review-stage` | commission an independent review and record the response |
+| `tidy-project` | survey what the documents still cite, then archive, close streams, offload or remove what the person approves |
 
 ## Changing this repository
 

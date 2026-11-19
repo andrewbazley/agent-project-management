@@ -21,6 +21,8 @@ description: Write a decision, a prediction block or a correction into a project
 3. **Match the weight to the stakes.** Full rule, falsifier and predictions for anything that
    changes a claim, an architecture or a large compute allocation. One short entry for a routine
    choice. Bookkeeping needs a commit message, not an entry.
-4. **Commit the entry by itself, before the run**, so the commit order shows it came first:
+4. **Update the index** at the top of `DECISIONS.md`: a row for a new decision, and a new status
+   for any decision this entry amends, corrects or supersedes.
+5. **Commit the entry by itself, before the run**, so the commit order shows it came first:
    "Decision N: <one-line summary>, written before <stage> runs".
-5. Cite the entry by number in the script docstring, the output `INDEX.md` and the report.
+6. Cite the entry by number in the script docstring, the output `INDEX.md` and the report.
