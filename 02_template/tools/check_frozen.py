@@ -4,7 +4,9 @@ check_frozen.py -- frozen files must stay byte-for-byte what a manifest records.
 
 Asserts
     Every file a manifest names still exists and has the SHA-256 digest the
-    manifest recorded when it was written.
+    manifest recorded when it was written. A file absent because its directory
+    was offloaded to lab storage (a row in DATA_INVENTORY.md "Offloaded") is
+    reported as offloaded, not missing; offload.py check verifies that copy.
 
 Why
     Once a specification, threshold table or reference output is frozen, later
@@ -51,6 +53,9 @@ import json
 import os
 import re
 import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import records  # noqa: E402
 
 PROG = "check_frozen"
 
@@ -162,10 +167,15 @@ def check(manifest, root, strict):
         return 1
     volatile = record.get("volatile_pattern")
 
-    tally = {"identical": 0, "volatile": 0, "changed": 0, "missing": 0}
+    tally = {"identical": 0, "volatile": 0, "changed": 0, "missing": 0,
+             "offloaded": 0}
+    offloaded = [r["local path"] for r in records.offloaded(root)]
     lines = []
     for rel, rec in sorted(files.items()):
         path = os.path.join(root, *rel.split("/"))
+        if not os.path.isfile(path) and records.covering(rel, offloaded):
+            tally["offloaded"] += 1
+            continue
         if not os.path.isfile(path):
             tally["missing"] += 1
             lines.append("  MISSING   %s" % rel)
@@ -189,9 +199,10 @@ def check(manifest, root, strict):
     if strict:
         failures += tally["volatile"]
     print("%-9s %s: %d files: %d identical, %d volatile-only, %d changed, "
-          "%d missing" % ("FAIL" if failures else "OK", shown, len(files),
-                          tally["identical"], tally["volatile"],
-                          tally["changed"], tally["missing"]))
+          "%d missing, %d offloaded"
+          % ("FAIL" if failures else "OK", shown, len(files),
+             tally["identical"], tally["volatile"], tally["changed"],
+             tally["missing"], tally["offloaded"]))
     for line in lines:
         print(line)
     return failures

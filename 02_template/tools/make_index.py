@@ -9,7 +9,9 @@ Asserts
     file (`summary.csv`), a subdirectory covering everything under it
     (`logs/`), or a glob covering a family of files (`fold_*.json`). Files
     under a subdirectory with its own INDEX.md belong to that index. Hidden
-    files are ignored.
+    files are ignored, and so is the OFFLOADED.md that offload.py leaves. An
+    entry naming a file that is absent because the directory was offloaded (a
+    row in DATA_INVENTORY.md "Offloaded") is not stale.
 
 Why
     An output nobody indexed is an output nobody can attribute: later there is
@@ -43,6 +45,9 @@ import fnmatch
 import os
 import re
 import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import records  # noqa: E402
 
 PROG = "make_index"
 INDEX = "INDEX.md"
@@ -93,16 +98,26 @@ def files_in(directory):
             x for x in dirs if not x.startswith(".")
             and not os.path.exists(os.path.join(d, x, INDEX)))
         for f in sorted(files):
-            if f.startswith(".") or (d == directory and f == INDEX):
+            if f.startswith(".") or (d == directory and f == INDEX) \
+                    or f.endswith("OFFLOADED.md"):
                 continue
             out.append(os.path.relpath(os.path.join(d, f), directory)
                        .replace(os.sep, "/"))
     return out
 
 
+def offloaded_here(directory):
+    """Whether files under this directory may be absent because offloaded."""
+    root = find_root(directory)
+    rel = os.path.relpath(os.path.abspath(directory), root)
+    return records.covering(rel, [r["local path"]
+                                  for r in records.offloaded(root)]) is not None
+
+
 def coverage(directory):
     """(files no entry covers, entries that match nothing)."""
     entries, _ = read_index(os.path.join(directory, INDEX))
+    elsewhere = offloaded_here(directory)
     files = files_in(directory)
     covered, stale = set(), []
     for raw in entries:
@@ -116,7 +131,7 @@ def coverage(directory):
                 hit = {None}  # an indexed directory that is empty still exists
         else:
             hit = {e} if os.path.isfile(os.path.join(directory, e)) else set()
-        if not hit:
+        if not hit and not elsewhere:
             stale.append(raw)
         covered |= hit
     return [f for f in files if f not in covered], stale

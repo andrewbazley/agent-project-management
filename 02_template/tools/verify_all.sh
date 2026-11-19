@@ -3,8 +3,9 @@
 # verify_all.sh -- run every verifier in the project from one command.
 #
 # Asserts: every stream verifier passes, every cited path resolves, every
-# frozen manifest still matches its files, and every indexed output directory
-# names exactly what it holds.
+# frozen manifest still matches its files, every indexed output directory
+# names exactly what it holds, and every offloaded set is intact where it is
+# stored. Also shows survey.py's budget warnings, which never fail the run.
 #
 # Why: checks that each have to be remembered separately are not run. One
 # command, run before and after any change to results or records, makes "all
@@ -19,11 +20,13 @@
 #   - check_citations.py over the whole repository;
 #   - check_frozen.py --check on each *manifest*.json under */results/;
 #   - make_index.py --check on every directory under */results/ and */spec/
-#     that holds an INDEX.md.
+#     that holds an INDEX.md;
+#   - offload.py check (sizes only; a store not mounted here is a SKIP);
+#   - survey.py --budget, whose WARN lines are counted and shown.
 # Anything under an archive/ directory is left out.
 #
 # Reads: the repository. Writes: nothing.
-# Exit status: 0 if every step passed (skips included), 1 otherwise.
+# Exit status: 0 if every step passed (skips and warnings included), 1 otherwise.
 #
 # Usage: tools/verify_all.sh [-v]        -v prints every step's full output
 #        PYTHON=/path/to/python3 tools/verify_all.sh
@@ -44,14 +47,16 @@ PYTHON=${PYTHON:-python3}
 verbose=0
 [ "${1:-}" = "-v" ] && verbose=1
 
-steps=0 failed=0 skipped_steps=0 skipped_checks=0
+steps=0 failed=0 skipped_steps=0 skipped_checks=0 warnings=0
 
 run_step() {
-    local name=$1 dir=$2 out status skips
+    local name=$1 dir=$2 out status skips warns
     shift 2
     out=$(cd "$dir" && "$@" </dev/null 2>&1)
     status=$?
     skips=$(printf '%s\n' "$out" | grep -c '^SKIP')
+    warns=$(printf '%s\n' "$out" | grep -c '^WARN')
+    warnings=$((warnings + warns))
     steps=$((steps + 1))
     if [ "$status" -ne 0 ]; then
         failed=$((failed + 1))
@@ -62,6 +67,9 @@ run_step() {
         skipped_checks=$((skipped_checks + skips))
         printf 'SKIP  %s (passed, %d checks skipped)\n' "$name" "$skips"
         [ "$verbose" -eq 1 ] || printf '%s\n' "$out" | grep '^SKIP' | sed 's/^/      /'
+    elif [ "$warns" -gt 0 ]; then
+        printf 'WARN  %s (passed, %d warnings)\n' "$name" "$warns"
+        [ "$verbose" -eq 1 ] || printf '%s\n' "$out" | grep '^WARN' | sed 's/^/      /'
     else
         printf 'PASS  %s\n' "$name"
     fi
@@ -106,6 +114,11 @@ if [ "${#index_dirs[@]}" -gt 0 ]; then
         "$PYTHON" -I "$here/make_index.py" --root "$root" --check "${index_dirs[@]}"
 fi
 
-printf 'verify_all: %d steps, %d failed, %d with skipped checks (%d checks skipped)\n' \
-    "$steps" "$failed" "$skipped_steps" "$skipped_checks"
+if [ -f "$root/DATA_INVENTORY.md" ]; then
+    run_step "offloaded data" "$root" "$PYTHON" -I "$here/offload.py" --root "$root" check
+fi
+run_step "budget" "$root" "$PYTHON" -I "$here/survey.py" --root "$root" --budget
+
+printf 'verify_all: %d steps, %d failed, %d with skipped checks (%d checks skipped), %d warnings\n' \
+    "$steps" "$failed" "$skipped_steps" "$skipped_checks" "$warnings"
 [ "$failed" -eq 0 ]

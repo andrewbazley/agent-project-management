@@ -16,12 +16,16 @@ Why
     and a project that relies on its own records needs the break reported when
     it happens, not when someone follows the link.
 
-    Three cases are reported without failing:
+    Four cases are reported without failing:
     - A path declared in the exceptions file (citation_exceptions.txt beside
       this script) as deliberately external or absent. A row is consulted only
       after normal resolution fails, so it can never mask a path that resolves,
       and a row that no document uses is itself a failure, so the file cannot
       outlive the citations it was written for.
+    - A path equal to or under one listed in DATA_INVENTORY.md, which
+      records data kept outside git (ignored, or offloaded to lab storage)
+      and where it lives. The inventory is the declaration, so a fresh clone
+      without the data still verifies.
     - An absolute path outside the repository, or one under `~/`. It is
       external by form: it already says where the file lives.
     - A bare file name matching several files in the tree, printed with its
@@ -44,7 +48,8 @@ Exceptions file format
 
 Reads
     Markdown files that git tracks or does not ignore (every *.md when the
-    root is not a git work tree), the file tree, and the exceptions file.
+    root is not a git work tree), the file tree, the exceptions file and
+    DATA_INVENTORY.md.
 Writes
     Nothing. Exits 1 if a citation does not resolve or an exception row is
     unused, 2 on a usage error.
@@ -62,6 +67,9 @@ import re
 import subprocess
 import sys
 from urllib.parse import unquote
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import records  # noqa: E402
 
 PROG = "check_citations"
 
@@ -281,7 +289,8 @@ def bases_for(doc, root):
 def check(root, docs, exceptions):
     tree = Tree(root)
     counts = {"cited": 0, "resolved": 0, "external": 0, "excepted": 0,
-              "ambiguous": 0, "unresolved": 0}
+              "inventoried": 0, "ambiguous": 0, "unresolved": 0}
+    listed = [p for p, _ in records.inventoried(root)]
     report = []
 
     for doc in docs:
@@ -317,6 +326,13 @@ def check(root, docs, exceptions):
                     matches = local
             if len(matches) == 1:
                 counts["resolved"] += 1
+                continue
+
+            if not os.path.isabs(cited) and any(
+                    records.covering(os.path.relpath(
+                        os.path.normpath(os.path.join(b, cited)), root), listed)
+                    for b in bases):
+                counts["inventoried"] += 1
                 continue
 
             if exceptions.cover(cited):
@@ -376,9 +392,11 @@ def main(argv=None):
     for status, where, cited, why in report:
         print("%-9s %s  `%s`  %s" % (status, where, cited, why))
     print("%s: %d citations in %d documents: %d resolve, %d external by form, "
-          "%d excepted, %d ambiguous, %d do not resolve; %d unused exceptions"
+          "%d in the data inventory, %d excepted, %d ambiguous, %d do not "
+          "resolve; %d unused exceptions"
           % (PROG, counts["cited"], len(docs), counts["resolved"],
-             counts["external"], counts["excepted"], counts["ambiguous"],
+             counts["external"], counts["inventoried"], counts["excepted"],
+             counts["ambiguous"],
              counts["unresolved"], len(unused)))
     return 1 if counts["unresolved"] or unused else 0
 
