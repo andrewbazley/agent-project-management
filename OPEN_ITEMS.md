@@ -61,6 +61,10 @@ to a network share or a cluster file system, where timestamps, permissions and i
 behave differently, and its SKIP-or-FAIL rule for a missing location relies on the share being a
 separate volume.
 
+`copy` also needs the storage mounted on the machine that holds the data. A cluster file system
+reached only over SSH is not supported; that would need a copy over SSH and a hash check run on
+the cluster, inside a job where the cluster's rules require one.
+
 **Closing condition** One real set is offloaded to lab storage, pruned, checked with `--full` and
 restored, and any problem is fixed or stated in the tool's docstring.
 
@@ -72,4 +76,11 @@ cite through generated reports may show live material as unreferenced.
 
 **Closing condition** The survey is run on a project of several streams, its unreferenced list is
 reviewed by hand, and the rules or thresholds are adjusted in a decision.
+
+**2026-11-19.** Run on a clone of a project that predates the template (4,041 files). It took under
+3 seconds and read that project's own data inventory, but found almost nothing unreferenced,
+because the project's README cites 39 documents directly and the reading path reaches 104
+documents (42,533 lines). The fan-out from the entry points was the useful measure, so the survey
+now reports it and warns above 12 documents, and the skill gained "shorten an entry point". Not
+yet run on a project built from the template.
 

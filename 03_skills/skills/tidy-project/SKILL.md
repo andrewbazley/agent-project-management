@@ -13,8 +13,14 @@ approves it.
 
 1. `git status` must be clean; commit or set aside other work first. Run `tools/verify_all.sh` and
    note its failures; a tidy does not hide them.
-2. `python3 tools/survey.py` for the totals, the largest unreferenced items and what git ignores;
-   `--list unreferenced` and `--list history` for the full lists; `--budget` for the warnings.
+2. `python3 tools/survey.py` for the totals, the reading path, the largest unreferenced items and
+   what git ignores; `--list unreferenced` and `--list history` for the full lists; `--reading` for
+   each live document's distance from an entry point and what leads there; `--budget` for the
+   warnings. A project that does not have the template's tools can be surveyed with them from
+   elsewhere: `python3 <template>/tools/survey.py --root <project>`.
+   If the project predates the template (no numbered streams, briefs not named `PROMPT_NN`), say
+   which documents are the current brief and entry points, since the survey infers them from
+   names, and propose adopting it (`adopt-project`) as a separate step rather than inside the tidy.
 3. Read only what classifying needs: the root and stream READMEs, `FOLDER_LAYOUT.md`,
    `DATA_INVENTORY.md`, the `DECISIONS.md` index, the current briefs and the `INDEX.md` of each
    candidate. Do not read archived or closed material to judge it; its summary or index is enough,
@@ -39,6 +45,10 @@ The actions, from least to most consequential:
 - **summarize**: the item stays where it is, but the document that leads to it gains a dated line
   saying it is outdated or wrong and what replaced it (`CLAUDE.md` 13.3). For material whose only
   problem is that sessions keep reading it.
+- **shorten an entry point**: when an entry point cites many documents directly (the survey's
+  fan-out warning), rewrite it to cite the few that are current, with one line pointing to an
+  index for the rest. Everything else leaves the reading path without a file moving or a citation
+  breaking. In a project whose README links every report, this does more than any move.
 - **close stream**: see section 4.
 - **offload**: copy to the lab storage named in `README.md` §6 with `tools/offload.py`, then
   remove the local copy (section 3). For anything that took hours to make or download.
@@ -59,7 +69,9 @@ approval, row by row if the person prefers; an approval covers the rows it names
    `python3 tools/offload.py prune <path> --yes`. Prune re-verifies the stored copy and removes only
    files that match it, keeping documents, indexes and small tables. If the storage is not mounted
    here, stop and tell the person; never offload to this machine's own disk. Data on a cluster is
-   offloaded from the cluster, under its rules for data transfer.
+   offloaded from the cluster, under its rules for data transfer. Offloading runs where the data
+   is: a clone from GitHub can be surveyed and its documents tidied, but it does not hold what git
+   ignores.
 3. **Archive** with `git mv`, so history follows each file. Where a document outside `archive/`
    still cites the old path, leave a stub there: for a Markdown file, a one-line file at the old
    path naming the new location and the date; for any other file, a row in

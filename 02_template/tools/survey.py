@@ -41,7 +41,8 @@ Budget (--budget)
     One WARN line for each sign that the project needs tidying: more files at
     the root than --root-files (12); a folder holding more than --briefs (3)
     briefs outside archive/; a "Where the work stands" section in README.md
-    longer than --status-lines (20) lines; unreferenced material above
+    longer than --status-lines (20) lines; entry points that cite more than
+    --direct-docs (12) documents directly; unreferenced material above
     --unreferenced-files (100) files or --unreferenced-size (1GB); a file git
     tracks above 50MB (GitHub warns at 50MB and refuses 100MB); and anything
     git ignores above --ignored-size (1GB) that DATA_INVENTORY.md does not
@@ -56,11 +57,13 @@ Writes
 Usage
     python3 tools/survey.py                  totals, largest unreferenced and ignored items
     python3 tools/survey.py --list STATE     every item in a state, rolled up to directories
-    python3 tools/survey.py --reading        the live documents and their length in lines
+    python3 tools/survey.py --reading        the live documents: hops from an entry point,
+                                             length in lines, and the document that leads there
     python3 tools/survey.py --budget         advisory warnings only
 """
 
 import argparse
+import collections
 import os
 import re
 import subprocess
@@ -208,12 +211,17 @@ class Project(object):
         return os.path.basename(doc) == "INDEX.md" or doc == records.FILE
 
     def classify(self):
-        live, queue = set(), []
+        live, queue = set(), collections.deque()
+        # Breadth-first, so each document's recorded depth is its shortest
+        # distance from an entry point and its parent is the nearest citer.
+        self.depth, self.parent = {}, {}
 
-        def add(rel, follow=True):
+        def add(rel, follow=True, parent=None):
             if rel in live or rel not in self.size or self.history_location(rel):
                 return
             live.add(rel)
+            self.depth[rel] = self.depth[parent] + 1 if parent else 0
+            self.parent[rel] = parent
             if follow and rel.endswith(".md") and rel not in UNFOLLOWED:
                 queue.append(rel)
 
@@ -234,12 +242,12 @@ class Project(object):
                 add(rel)
 
         while queue:
-            doc = queue.pop()
+            doc = queue.popleft()
             for target in self.citations(doc):
                 if os.path.isdir(os.path.join(self.root, target)):
                     if self.answers_for_whole(doc):
                         for f in self.under(target):
-                            add(f)
+                            add(f, parent=doc)
                     else:
                         heads = [target + "/" + n for n in ("INDEX.md", "README.md")
                                  if target + "/" + n in self.size]
@@ -247,15 +255,15 @@ class Project(object):
                             heads = [f for f in self.under(target) if f.endswith(".md")
                                      and "/" not in f[len(target) + 1:]]
                         for f in heads:
-                            add(f)
+                            add(f, parent=doc)
                 else:
-                    add(target)
+                    add(target, parent=doc)
             if os.path.basename(doc) == "INDEX.md":
                 d = os.path.join(self.root, os.path.dirname(doc))
                 uncovered = set(mi.coverage(d)[0])
                 for f in mi.files_in(d):
                     if f not in uncovered:
-                        add(self.rel(os.path.join(d, f)))
+                        add(self.rel(os.path.join(d, f)), parent=doc)
 
         cited_files, cited_dirs = set(), set()
         for doc in (f for f in self.size if f.endswith(".md")):
@@ -332,6 +340,10 @@ class Project(object):
             out.append((p, total))
         return sorted(out, key=lambda t: -t[1])
 
+    def direct(self):
+        """Documents one citation away from an entry point."""
+        return sorted(r for r, d in self.depth.items() if d == 1 and r.endswith(".md"))
+
     def lines(self, rel):
         with open(os.path.join(self.root, rel), encoding="utf-8",
                   errors="replace") as fh:
@@ -368,6 +380,12 @@ def budget(project, state, args):
         warnings.append("README.md \"Where the work stands\" runs %d lines "
                         "(budget %d); the detail belongs in the brief"
                         % (n, args.status_lines))
+    direct = project.direct()
+    if len(direct) > args.direct_docs:
+        warnings.append("the entry points cite %d documents directly (%d lines; budget "
+                        "%d documents); a session's reading path starts this wide "
+                        "(survey.py --reading)" % (len(direct), sum(project.lines(r)
+                                                   for r in direct), args.direct_docs))
     unref = [r for r, s in state.items() if s == "unreferenced"]
     unref_size = sum(project.size[r] for r in unref)
     if len(unref) > args.unreferenced_files or unref_size > args.unreferenced_size:
@@ -399,6 +417,7 @@ def main(argv=None):
     ap.add_argument("--root-files", type=int, default=12)
     ap.add_argument("--briefs", type=int, default=3)
     ap.add_argument("--status-lines", type=int, default=20)
+    ap.add_argument("--direct-docs", type=int, default=12)
     ap.add_argument("--unreferenced-files", type=int, default=100)
     ap.add_argument("--unreferenced-size", type=parse_size, default=parse_size("1GB"))
     ap.add_argument("--ignored-size", type=parse_size, default=parse_size("1GB"))
@@ -425,9 +444,11 @@ def main(argv=None):
 
     if args.reading:
         totals = {}
-        for rel in sorted(r for r, s in state.items() if s == "live" and r.endswith(".md")):
-            n = project.lines(rel)
-            print("%6d  %s" % (n, rel))
+        docs = [r for r, s in state.items() if s == "live" and r.endswith(".md")]
+        for rel in sorted(docs, key=lambda r: (project.depth[r], r)):
+            print("%2d %6d  %s%s" % (project.depth[rel], project.lines(rel), rel,
+                                     "  (from %s)" % project.parent[rel]
+                                     if project.parent[rel] else ""))
         for st in STATES:
             docs = [r for r, s in state.items() if s == st and r.endswith(".md")]
             totals[st] = (len(docs), sum(project.lines(r) for r in docs))
@@ -441,6 +462,11 @@ def main(argv=None):
         files = [r for r, s in state.items() if s == st]
         print("  %-13s %6d files %10s" % (st, len(files),
                                            human(sum(project.size[r] for r in files))))
+    live_docs = [r for r, s in state.items() if s == "live" and r.endswith(".md")]
+    direct = project.direct()
+    print("  reading path  %6d documents, %d lines; %d documents (%d lines) one "
+          "citation from an entry point" % (len(live_docs), sum(project.lines(r) for r in live_docs),
+                                            len(direct), sum(project.lines(r) for r in direct)))
     if project.closed:
         print("  closed streams: %s" % ", ".join(sorted(project.closed)))
     items = project.rollup(state, "unreferenced")
