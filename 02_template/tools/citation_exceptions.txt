@@ -1,0 +1,14 @@
+# Paths cited in this repository's documents that deliberately do not resolve.
+# Read by check_citations.py, which consults a row only after a citation has
+# failed to resolve from the citing document's directory, its stream folder and
+# the repository root, and fails if a row is used by no document.
+#
+# One row per line: the path as cited, then a TAB or two or more spaces, then
+# the reason, naming the system the path belongs to or why it is absent. The
+# path may be a glob (`*` spans `/`). Absolute paths outside the repository and
+# `~/` paths are external by form and need no row.
+#
+# Examples (uncomment and adapt):
+# data/raw/large_input.csv     kept on the shared file system, not in git; see data/README.md
+# env/environment.yml          belongs to the upstream analysis repository
+# results/old_run/*            removed after review; superseded by a later run
