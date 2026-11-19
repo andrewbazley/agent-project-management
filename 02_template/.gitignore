@@ -1,0 +1,25 @@
+# Every rule says why the path is left out and how to get it back. A rule
+# nobody can explain gets deleted by the next person, or followed by a
+# force-add that puts the data in history.
+
+# Scratch: working files stay out of the record.
+scratch/
+
+# Large inputs are regenerable from the fetch scripts and the identifier lists
+# in each stream's data/, with source and size in data/DOWNLOAD_LOG.md.
+# Example:
+# 01_first_stream/data/raw/
+
+# Environments live outside the tree; this covers one built inside it.
+.venv/
+venv/
+.conda/
+
+# Claude Code worktrees are checkouts of this repository, not content.
+.claude/worktrees/
+
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.pytest_cache/
+.DS_Store
