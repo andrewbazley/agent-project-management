@@ -1,14 +1,19 @@
 # Agent project management
+by Andrew Bazley
 
-A way to run long research projects with AI coding agents (Claude Code) as a chain of sessions,
-with the project's memory kept as a git-tracked record instead of in any one conversation. It
-comes from a series of projects run this way, and every convention here exists because its
-absence caused a specific, recorded failure.
+This repository contains documents and an example file system for running long research projects with AI agents, 
+in a chain of sessions that build on each other's work, with the project's memory kept as a git-tracked record 
+instead of in any one conversation. This avoids losing work to memory compression or archiving, while keeping 
+files and discovery organized, documented, and auditable.
+I based this repository on how I run my own research projects. While I tried making this as general as possible, 
+not all of these workflows may suit every project. Because these documents contain direct agent instructions, 
+including CLAUDE.md files, it's important to review the instructions before and during your project, so progress isn't 
+inhibited by unhelpful or irrelevant rules.
 
-Each session reads the current brief, does the work that brief names, records what it decided and
+The overview, is that each session reads the current brief, does the work that brief names, records what it decided and
 measured, verifies it, and writes the brief for the next session. Git provides the history and the
 proof of order: a decision committed before its result is a prediction, and one committed after is
-not.
+not. This enables simultaneous benchmarking and learning for coding and development projects.
 
 ## What is here
 
