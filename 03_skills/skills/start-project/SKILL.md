@@ -11,10 +11,8 @@ description: Start a new research project as a git-tracked record (README, DECIS
    `02_template/` into the new folder, including dotfiles:
    `git clone --depth 1 https://github.com/andrewbazley/agent-project-management <tmp>` then
    `cp -R <tmp>/02_template/. <project>/`. Rename `01_first_stream/` to `01_<stream_name>/`.
-3. **Add the working rules.** The template has no `CLAUDE.md`. Ask the user which one to copy (their
-   lab's standard file or a recent project's), copy it to the root, and remove anything specific to
-   another project. Check that its cross-references (for example "`README.md` §6") match the
-   template.
+3. **Keep the working rules general.** The template's `CLAUDE.md` comes with the copy. Put rules
+   specific to this project in `README.md` §6, not in `CLAUDE.md`.
 4. **Fill in, from the user's answers only:** the title and goal in `README.md`, §1 and §2, the
    stream row in `FOLDER_LAYOUT.md`, and the stream `README.md`. Leave the HTML comments that guide
    later sessions until the section is filled.

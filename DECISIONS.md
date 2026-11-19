@@ -69,6 +69,16 @@ what the rules file should cover.
 by an automated check, and the existing files are already nearly project-independent. `OPEN_ITEMS.md`
 item 1 tracks the gap.
 
+### 4a. Amended 2026-11-19: the template now includes `CLAUDE.md`
+
+The rules file from the earlier projects was edited by hand and added as `02_template/CLAUDE.md`.
+The edits: the stories behind each rule refer to "an earlier project" instead of "this project";
+the storage amendment in 7.6 no longer names a cluster path or quota; new rules were appended at the
+end of their sections (2.8, 2.9, 3.11, 4.6, 4.7, 6.7) so existing numbers still point to the same
+rules; 3.1, 4.3 and 5.2 were extended; and two sections were added, 11 on subagents and independent
+review and 12 on proportion. A conflict between it and a project's `README.md` §6 is settled by a
+decision entry. `OPEN_ITEMS.md` item 1 is closed.
+
 ---
 
 ## 5. Skills ship as a Claude Code plugin in `03_skills/`

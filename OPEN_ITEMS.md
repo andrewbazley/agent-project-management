@@ -12,6 +12,8 @@ Questions raised and not yet acted on, each with the condition that would close 
 **Closing condition** A lab-standard `CLAUDE.md` is added to `02_template/`, or the root `README.md`
 links to the one to copy.
 
+**Closed 2026-11-19.** `02_template/CLAUDE.md` added; `DECISIONS.md` 4a.
+
 ## 2. The plugin has not been installed from a second account
 
 The repository is private. Installation depends on each user's git credentials, which has not been

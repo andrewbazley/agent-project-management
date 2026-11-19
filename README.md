@@ -18,7 +18,7 @@ not.
 | `01_guide/supervision.md` | mechanical checks, independent reviewers, unattended runs, and several agents sharing one record |
 | `01_guide/shared_compute.md` | rules for an agent using a shared cluster on your account, with a block for `~/.claude/CLAUDE.md` |
 | `01_guide/writing_style.md` | how documents, briefs and commit messages are written |
-| `02_template/` | the folder you copy to start a project: record files, a first stream, review templates and the check tools |
+| `02_template/` | the folder you copy to start a project: the working rules (`CLAUDE.md`), record files, a first stream, review templates and the check tools |
 | `03_skills/` | Claude Code skills that carry out the routines: start, adopt, begin a session, end a session, record a decision, review |
 | `DECISIONS.md`, `OPEN_ITEMS.md` | this repository's own record |
 
@@ -32,7 +32,7 @@ git clone --depth 1 https://github.com/andrewbazley/agent-project-management /tm
 cp -R /tmp/apm/02_template/. my-project/
 ```
 
-Then add a `CLAUDE.md` with the working rules (see below), rename `01_first_stream/`, fill in
+Then rename `01_first_stream/`, fill in
 `README.md`, write decision 1 and the first brief, `git init`, and run `tools/verify_all.sh`.
 
 For a project that already exists, use `/research-record:adopt-project`, or follow "Adopting an
@@ -40,14 +40,12 @@ existing project" in `01_guide/conventions.md`.
 
 ## The working rules (`CLAUDE.md`)
 
-The template does not include a `CLAUDE.md`. Use the lab's current one, or the one from a recent
-project with its project-specific parts removed. It should cover, with the failure behind each
-rule: searching for prior work before claiming novelty; checking inputs against independent
-sources; numbers discipline (frozen rules, named denominators, one threshold per comparison);
-verification by script; the decision record; editing documents with dated corrections; files,
-indexes and archiving; writing the next brief; staying within the brief's scope; and when to stop
-and ask. Project-specific rules go in the project's `README.md` §6, which the rules file should
-point to.
+`02_template/CLAUDE.md` holds the general working rules, each with the failure behind it. Claude
+Code reads it at the start of every session. Leave it general: rules for one project go in that
+project's `README.md` §6, and rules for one person's accounts and machines (such as a cluster) go
+in their `~/.claude/CLAUDE.md`. Add a rule only when a real failure is behind it, at the end of its
+section, so that existing cross-references such as "`CLAUDE.md` 7.4" keep pointing at the same
+rule.
 
 ## Install the skills
 
