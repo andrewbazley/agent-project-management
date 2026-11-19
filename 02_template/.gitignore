@@ -5,6 +5,13 @@
 # Scratch: working files stay out of the record.
 scratch/
 
+# Each stream's work/ is where runs, subagents and cluster jobs write. A file
+# leaves it when a document cites it: small outputs are promoted to a dated
+# results/ directory and committed; large or costly ones are listed in
+# DATA_INVENTORY.md and, if they must outlive this machine, offloaded with
+# tools/offload.py. Anything else here can be regenerated or deleted.
+work/
+
 # Large inputs are regenerable from the fetch scripts and the identifier lists
 # in each stream's data/, with source and size in data/DOWNLOAD_LOG.md.
 # Example:

@@ -188,8 +188,8 @@ future session can tell what was decided deliberately from what happened by acci
 4. **Outputs that a document or a verifier reads are frozen.** Never overwrite them. New work
    writes new files in a new dated directory, and the verifier asserts that the frozen
    directories have not been modified.
-5. **Mark anything irreplaceable as such, in the inventory, next to the thing that would delete
-   it.** One inventory suggested a delete pattern that would have removed output no longer
+5. **Mark anything irreplaceable as such, in `DATA_INVENTORY.md`, next to the thing that would
+   delete it.** One inventory suggested a delete pattern that would have removed output no longer
    reproducible in reasonable time and would have broken two verification scripts. Say which
    outputs are the only copy and what re-creating them would cost.
 6. **Log any large download before starting it**, with the source and the size, and stop before
@@ -293,3 +293,37 @@ manifest) is for decisions that change a claim, an architecture or a large compu
 rename, a bookkeeping fix or a syntax check needs a commit message and nothing more. Measure
 progress by the decisions results changed and the failure classes found, not by the number of
 commits, checks or documents.
+
+## 13. Keeping the project small
+
+A project grows with every rerun and side analysis, and each session pays for what it reads.
+Earlier projects ended up with results folders nobody could rank and sessions that spent their
+reading on documents a person then had to call outdated. These rules keep the material a session
+reads small without losing anything.
+
+1. **Archived or closed means out of the reading path, never out of reach.** Anything archived,
+   closed or offloaded keeps a short summary where a session will look for it (a closed stream's
+   README, a stub at the old path, a row in `DATA_INVENTORY.md`), a recorded location, and a way
+   back: a decision to reopen a stream, or `tools/offload.py restore` for data. Something nobody
+   can find again has been deleted, whatever folder it went to.
+2. **Read the summary, not the thing.** A session opens an archive folder, a closed stream, a superseded
+   brief or offloaded data only when its brief or the person asks for it, and reads the summary
+   first.
+3. **Say where it will be read that something is wrong.** When material turns out to be outdated
+   or incorrect, the summary, index or brief that leads to it says so, with the decision or
+   correction (6.7), so that no later session has to open it to find out.
+4. **Outputs start outside git.** Runs, subagents and cluster jobs write to `NN_<stream>/work/`.
+   A file moves into a dated results directory when a document cites it, and is frozen there
+   (7.4). Committing every run's output is how results folders multiplied in earlier projects.
+5. **Never delete what is costly to make again.** An output that regenerates within about an hour
+   from committed code and available inputs may be removed once nothing in the reading path cites
+   it, keeping its index. One that took hours of download or compute (`README.md` §6 sets the
+   line) is copied to the lab storage named in §6 with `tools/offload.py`, and the local copy is
+   removed only after the stored copy verifies. An only copy stays where it is until a second
+   verified copy exists. A personal computer is never where the only copy of costly data lives.
+6. **Every move leaves a trail.** Data gets a row in `DATA_INVENTORY.md`; a path a document cites
+   gets a stub (7.7); a stream closed, reopened or moved gets a dated note in `FOLDER_LAYOUT.md`
+   and a decision.
+7. **Tidy at milestones and when `tools/verify_all.sh` warns about the budget**, with the
+   `tidy-project` skill: survey the tree, propose, get the person's approval, then act in one
+   commit. Nothing is archived, closed, offloaded or removed on a session's own judgment.

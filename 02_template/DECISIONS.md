@@ -5,8 +5,20 @@ and the falsifier where one applies. Entries are written and committed **before*
 govern. A wrong entry gets a dated sub-entry and the original text stays as written.
 
 Headings are fixed so the file can be read by grep: `## N. Title` for a decision, `### Na. Title`
-for a sub-entry, correction or prediction block. Sessions read the entries their brief names, not
-the whole file.
+for a sub-entry, correction or prediction block. Sessions read the index and the entries their
+brief names, not the whole file.
+
+## Index
+
+One row per decision, updated in the same commit as any entry that changes its status, so a reader
+can see which decisions are in force without reading the ones that are not.
+
+| # | decision | status |
+|---|---|---|
+| 1 | <what the first session is licensed to do> | in force |
+
+<!-- Status is one of: in force; amended by Na; corrected by Na; superseded by M; closed with
+stream NN (still true of that stream's work, not a rule for new work). -->
 
 <!-- If the project existed before this file, say so here: when the record opens, and where the
 earlier decisions live (script docstrings, old notes), and add the gap to OPEN_ITEMS.md. -->

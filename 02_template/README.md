@@ -45,7 +45,8 @@ working rules and overrides habit.
 | `CLAUDE.md` | the general working rules; binding on every session |
 | `DECISIONS.md` | numbered decisions and predictions, each written before the work it governs |
 | `OPEN_ITEMS.md` | questions raised and deliberately not acted on, each with a closing condition |
-| `FOLDER_LAYOUT.md` | what is where, and why streams are kept apart |
+| `FOLDER_LAYOUT.md` | what is where, which streams are open or closed, and why they are kept apart |
+| `DATA_INVENTORY.md` | data not wholly in git: only copies, data kept elsewhere, sets offloaded to lab storage |
 | `<stream>/PROMPT_NN_*.md` | the brief each session works from; the highest number is current |
 | `<stream>/results/<dated>/INDEX.md` | every file in an output directory and the script that made it |
 | `reviews/` | independent reviews and the project's responses to them |
@@ -62,6 +63,8 @@ lists what each check asserts. Run it before and after any change to a document 
 is settled by a dated entry in DECISIONS.md, not by whichever was read last. Number them; other documents cite them as "README §6.N".
 Typical entries: which specification and thresholds are frozen and how a new version is made;
 which stage licenses which; what is held out from what; where large data and cluster outputs
-live; which machine-specific limits apply. Give each rule its reason. -->
+live, and the lab storage that offloaded data goes to (`tools/offload.py --to`); how many hours of
+compute or download make an output costly enough to keep (CLAUDE.md §13); which machine-specific
+limits apply. Give each rule its reason. -->
 
 1. <rule>. <reason>.
