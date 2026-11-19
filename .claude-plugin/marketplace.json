@@ -1,0 +1,12 @@
+{
+  "name": "agent-project-management",
+  "owner": { "name": "Andrew Bazley" },
+  "description": "Skills for running long research projects as a chain of agent sessions with a git-tracked record",
+  "plugins": [
+    {
+      "name": "research-record",
+      "source": "./03_skills",
+      "description": "Start, adopt, resume, close and review research projects kept as a git-tracked record"
+    }
+  ]
+}
